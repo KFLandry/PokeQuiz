@@ -36,3 +36,30 @@ Local.properties doit être ignoré car il contient des informations locales à 
 
 10. il ne resout pas la ref java.
     java.io.File n'existe que sur JVM/Android et n'est donc pas disponible dans le code commun multiplateforme pour les autresplatreformes. 
+
+11. En tournant l'émulateur Android (rotation), l'activité est recréée. Le compteur mémorisé avec `remember` n'est pas conservé (il revient à 0) car l'état en mémoire de composition est perdu lors de la destruction/recréation de l'activité. Pour persister l'état lors d'un changement de configuration, il conviendrait d'utiliser `rememberSaveable` ou un `ViewModel`. 
+
+
+
+
+1. Parce que le lancement est beaucoup plus rapide sur Desktop, ce qui permet de développer et tester l'UI plus efficacement qu'en passant par un émulateur ou un téléphone
+
+2. Hot Reload : met à jour le code sans redémarrer l'application.
+   Redémarrage : relance complètement l'application.
+   À l'étape 7, les changements de configuration/projet (Gradle, dépendances, etc) nécessitent un redémarrage complet
+
+3. Le projet risque de ne plus compiler ou d'afficher des avertissements, car androidTarget {} correspond à une ancienne configuration KMP devenue obsolète
+
+4. Greeting est commun, mais il appelle du code spécifique à chaque plateforme via le mécanisme expect/actual. Chaque plateforme fournit donc son propre texte.
+
+5. le bytecode JVM est généralement le plus facile à analyser (nombreux outils de décompilation). C'est important car du code sensible placé dans commonMain pourrait être plus facilement récupéré ou compris par un attaquant.
+
+6. Les tâches d'exécution sont celles contenant run dans leur nom (ex. run, jvmRun, selon le projet).
+   La tâche de Hot Reload est généralement celle qui contient hotReload dans son nom.
+
+7. Les fichiers .class se trouvent dans shared/build/classes/....
+   Les dossiers/fichiers .klib correspondent aux bibliothèques Kotlin/Native utilisées pour iOS et autres cibles natives.
+
+8. La bibliothèque Skiko apparaît car elle fournit la couche graphique utilisée par Compose Multiplatform pour l'affichage sur Desktop.
+
+9. Les preflight checks vérifient que l'environnement est correctement configuré avant la compilation ou l'exécution
